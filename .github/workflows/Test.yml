@@ -1,0 +1,51 @@
+name: Test
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-20.04
+    steps:
+      # ----------------------------------------------------------------------- Checkout
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # ----------------------------------------------------------------------- Build
+      - name: Build
+        run: ./build.sh
+      
+      # ----------------------------------------------------------------------- Upload Artifacts
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: BuildOutputs
+          if-no-files-found: error
+          path: |
+            test-nodownlevel
+            test-downlevel
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: ['ubuntu-20.04', 'ubuntu-18.04', 'ubuntu-16.04']
+    name: Test
+    runs-on: ${{matrix.distro}}
+    needs: build
+    steps:
+      # ----------------------------------------------------------------------- Download Artifacts
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: BuildOutputs
+
+      # ----------------------------------------------------------------------- Run the nodownlevel version
+      - name: No downlevel test
+        continue-on-error: true
+        run: ./test-nodownlevel
+
+      # ----------------------------------------------------------------------- Run the downlevel version
+      - name: No downlevel test
+        continue-on-error: true
+        run: ./test-downlevel
