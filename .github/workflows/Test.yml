@@ -30,6 +30,7 @@ jobs:
       fail-fast: false
       matrix:
         distro: ['ubuntu-20.04', 'ubuntu-18.04', 'ubuntu-16.04']
+        test: ['test-nodownlevel', 'test-downlevel']
     name: Test
     runs-on: ${{matrix.distro}}
     needs: build
@@ -42,16 +43,8 @@ jobs:
 
       # We have to do this because upload-artifact does not preserve permissions
       - name: Mark test programs as executable
-        run: |
-          chmod +x test-nodownlevel
-          chmod +x test-downlevel
+        run: chmod +x ${{matrix.test}}
 
-      # ----------------------------------------------------------------------- Run the nodownlevel version
-      - name: No downlevel test
-        continue-on-error: true
-        run: ./test-nodownlevel
-
-      # ----------------------------------------------------------------------- Run the downlevel version
-      - name: Downlevel test
-        continue-on-error: true
-        run: ./test-downlevel
+      # ----------------------------------------------------------------------- Run the test
+      - name: Run test program
+        run: ./${{matrix.test}}
