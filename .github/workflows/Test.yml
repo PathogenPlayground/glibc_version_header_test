@@ -52,6 +52,6 @@ jobs:
         run: ./test-nodownlevel
 
       # ----------------------------------------------------------------------- Run the downlevel version
-      - name: No downlevel test
+      - name: Downlevel test
         continue-on-error: true
         run: ./test-downlevel
