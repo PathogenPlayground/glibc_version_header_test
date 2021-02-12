@@ -40,6 +40,12 @@ jobs:
         with:
           name: BuildOutputs
 
+      # We have to do this because upload-artifact does not preserve permissions
+      - name: Mark test programs as executable
+        run: |
+          chmod +x test-nodownlevel
+          chmod +x test-downlevel
+
       # ----------------------------------------------------------------------- Run the nodownlevel version
       - name: No downlevel test
         continue-on-error: true
